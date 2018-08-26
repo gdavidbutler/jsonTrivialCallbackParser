@@ -267,6 +267,11 @@ sur:
       if (ilen > 1
        && *(in + 1) == '\\'
        && *(in + 2) == 'u') {
+        if (c < 0xd800)
+          goto err;
+        c -= 0xd800;
+        c *= 0x400;
+        c += 0x10000 - 0xdc00;
         in += 2;
         ilen -= 2;
         goto sur;

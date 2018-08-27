@@ -15,12 +15,11 @@ jsonParse(
 ){
   const unsigned char *sb;
   unsigned int tL; /* current level */
-  unsigned int tD; /* gone deeper? for body */
   jsonSt_t vl;
 
   if (!(sb = s))
     return -1;
-  tD = tL = 0;
+  tL = 0;
   goto bgn;
 
 err:

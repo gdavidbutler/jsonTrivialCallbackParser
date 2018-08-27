@@ -267,18 +267,20 @@ sur:
         goto err;
       }
       in++;
-      if (ilen
-       && *(in + 0) == '\\'
-       && *(in + 1) == 'u') {
-        if (s)
+      if (c > 0xd7ff && c < 0xdc00) {
+        if (!s
+         && ilen
+         && *(in + 0) == '\\'
+         && *(in + 1) == 'u') {
+          s = c;
+          ++in;
+          --ilen;
+          goto sur;
+        } else
           goto err;
-        s = c;
-        ++in;
-        --ilen;
-        goto sur;
       }
-      if (s) {
-        if (s < 0xd800 || c < 0xdc00)
+      if (c > 0xdbff && c < 0xe000) {
+        if (!s)
           goto err;
         s -= 0xd800;
         s *= 0x400;

@@ -133,6 +133,7 @@ main(
 
   if (argc == 2) {
     static const unsigned char enc[] = "This is a test of \"\\\b\t\f\n\r\" how did it do?";
+    static const unsigned char dnc[] = "This is a test of\\n(c) white on black \\u00a9\\n(c) black on white \\uD83C\\uDD52\\nhow did it do?";
     static const unsigned char uri[] = "http%3A%2F%2Ffoo.bar%23foo%3Ffoo%3Db%2Ba%2Br%26bar%3Df%20o%20o";
     static const unsigned char iru[] = "http://foo.bar#foo?foo=b+a+r&bar=f o o";
     static const char b64[] = "QmFzZTY0";
@@ -152,6 +153,10 @@ main(
     if (sz != sizeof(enc) - 1 || memcmp(tbf, enc, sizeof(enc) - 1))
       return 2;
     free(tbf);
+    if ((sz = jsonDecodeString(bf, BUFSIZ, dnc, sizeof(dnc) - 1)) > BUFSIZ)
+      return 2;
+    printf("jsonDecodeString(%s)->%.*s\n", dnc, sz, bf);
+    putchar('\n');
     if ((sz = jsonDecodeUri(bf, BUFSIZ, uri, sizeof(uri) - 1)) > BUFSIZ)
       return 2;
     printf("jsonDecodeUri(%s)\n->\n%.*s\n", uri, sz, bf);

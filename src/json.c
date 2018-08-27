@@ -198,8 +198,6 @@ jsonDecodeString(
  ,int ilen
 ){
   int len;
-  unsigned long c;
-  unsigned int i;
 
   len = 0;
   for (; ilen--;) switch (*in) {
@@ -245,9 +243,14 @@ jsonDecodeString(
       in++;
       len++;
       break;
-    case 'u':
-      c = 0;
+    case 'u': {
+      unsigned long s;
+      unsigned long c;
+      unsigned int i;
+
+      s = 0;
 sur:
+      c = 0;
       for (i = 4; i; --i) if (!(in++,ilen--)) goto err; else switch (*in) {
       case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
         c *= 16;
@@ -264,17 +267,24 @@ sur:
       default:
         goto err;
       }
-      if (ilen > 1
-       && *(in + 1) == '\\'
-       && *(in + 2) == 'u') {
-        if (c < 0xd800)
+      in++;
+      if (ilen
+       && *(in + 0) == '\\'
+       && *(in + 1) == 'u') {
+        if (s)
           goto err;
-        c -= 0xd800;
-        c *= 0x400;
-        c += 0x10000 - 0xdc00;
-        in += 2;
-        ilen -= 2;
+        s = c;
+        ++in;
+        --ilen;
         goto sur;
+      }
+      if (s) {
+        if (s < 0xd800 || c < 0xdc00)
+          goto err;
+        s -= 0xd800;
+        s *= 0x400;
+        c -= 0xdc00;
+        c += s + 0x10000;
       }
       /* https://en.wikipedia.org/wiki/UTF-8 */
       if (c <= 0x7f) { /* 7 bits */
@@ -330,7 +340,7 @@ sur:
         len += 6;
       } else
         goto err;
-      break;
+      } break;
     default:
       if (olen > 0) {
         *out++ = *in;

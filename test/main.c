@@ -114,10 +114,20 @@ cb(
       putchar('/');
     putchar('\n');
     break;
-  default:
+  case jsonTp_tr:
+    putchar('!');
+    putchar(' ');
+    if (l) {
+      for (i = 0; i < (int)l; ++i)
+        if ((tg + i)->s)
+          printf("/\"%.*s\"", (tg + i)->l, (tg + i)->s);
+        else
+          printf("/%d", (tg + i)->l);
+    } else
+      putchar('/');
+    printf(":(%.*s)\n", vl->l, vl->s);
     break;
   }
-  fflush(stdout);
   return 0;
 }
 
@@ -186,14 +196,13 @@ main(
   }
   sz = lseek(fd, 0, SEEK_END);
   lseek(fd, 0, SEEK_SET);
-  bf = malloc(sz + 1);
+  bf = malloc(sz);
   if (read(fd, bf, sz) != sz) {
     fprintf(stderr, "%s: read fail on %s\n", argv[0], argv[2]);
     return 1;
   }
   close(fd);
-  bf[sz] = '\0';
-  printf("%d %d\n", sz, jsonParse(atoi(argv[1]) ? cb : 0, sizeof(tg) / sizeof(tg[0]), tg, bf, 0));
+  printf("%d %d\n", sz, jsonParse(atoi(argv[1]) ? cb : 0, sizeof(tg) / sizeof(tg[0]), tg, bf, sz, 0));
   free(bf);
   return 0;
 }

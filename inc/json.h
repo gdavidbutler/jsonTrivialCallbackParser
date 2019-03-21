@@ -22,6 +22,7 @@ typedef struct {
 } jsonSt_t;
 
 /* prototype of a callback function */
+/* returns 0 on success else aborts parse */
 typedef int (*jsonCb_t)(
   jsonTp_t
  ,unsigned int numberOfLevels
@@ -32,35 +33,34 @@ typedef int (*jsonCb_t)(
 
 /* return -1 on error else offset of last char parsed */
 /* provide a tag buffer large enough for the deepest level of nesting supported */
-/* json must be null terminated */
-int jsonParse(jsonCb_t, unsigned int numberOfLevelsInBuf, jsonSt_t *levelBuf, const unsigned char *json, void *userContext);
+int jsonParse(jsonCb_t, unsigned int numberOfLevelsInBuf, jsonSt_t *levelBuf, const unsigned char *json, unsigned int jlen, void *userContext);
 
 /* return -1 on error else the length of out */
 /* if length returned is more than length provided, allocate needed memory and retry */
-int jsonDecodeString(unsigned char *out, int olen, const unsigned char *in, int ilen);
+int jsonDecodeString(unsigned char *out, unsigned int olen, const unsigned char *in, unsigned int ilen);
             
 /* return -1 on error else the length of out */
 /* if length returned is more than length provided, allocate needed memory and retry */
-int jsonEncodeString(unsigned char *out, int olen, const unsigned char *in, int ilen);
+int jsonEncodeString(unsigned char *out, unsigned int olen, const unsigned char *in, unsigned int ilen);
 
 /* return -1 on error else the length of out */
 /* if length returned is more than length provided, allocate needed memory and retry */
-int jsonDecodeUri(unsigned char *out, int olen, const unsigned char *in, int ilen);
+int jsonDecodeUri(unsigned char *out, unsigned int olen, const unsigned char *in, unsigned int ilen);
 
 /* return -1 on error else the length of out */
 /* if length returned is more than length provided, allocate needed memory and retry */
-int jsonEncodeUri(char *out, int olen, const unsigned char *in, int ilen);
+int jsonEncodeUri(char *out, unsigned int olen, const unsigned char *in, unsigned int ilen);
 
 /* estimated length of needed out buffer */
 #define jsonDecodeBase64Need(inl) (((inl + 3) / 4) * 3)
 
 /* return -1 on error else the length of out */
 /* if length returned is more than length provided, allocate needed memory and retry */
-int jsonDecodeBase64(unsigned char *out, int olen, const char *in, int ilen);
+int jsonDecodeBase64(unsigned char *out, unsigned int olen, const char *in, unsigned int ilen);
 
 /* estimated length of needed out buffer */
 #define jsonEncodeBase64Need(inl) (((inl + 2) / 3) * 4)
 
 /* return -1 on error else the length of out */
 /* if length returned is more than length provided, allocate needed memory and retry */
-int jsonEncodeBase64(char *out, int olen, const unsigned char *in, int ilen);
+int jsonEncodeBase64(char *out, unsigned int olen, const unsigned char *in, unsigned int ilen);

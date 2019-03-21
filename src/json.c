@@ -11,6 +11,7 @@ jsonParse(
  ,unsigned int m
  ,jsonSt_t *t
  ,const unsigned char *s
+ ,unsigned int l
 ,void *v
 ){
   const unsigned char *sb;
@@ -27,15 +28,11 @@ err:
   vl.s = s - 1;
   if (c)
     c(jsonTp_tr, tL, t, &vl, v);
+  l++, s--;
   goto rtn;
 
 sep:
-  for (;;) switch (*s++) {
-  case '\0':
-    if (c)
-      c(jsonTp_ts, tL, t, &vl, v);
-    goto rtn;
-
+  for (; l--;) switch (*s++) {
   case '\t': case '\n': case '\r': case ' ':
     break;
 
@@ -49,36 +46,33 @@ sep:
   default:
     if (c && c(jsonTp_ts, tL, t, &vl, v))
       goto rtn;
-    --s;
+    l++, --s;
     goto bgn;
   }
+  goto rtn;
 
 str:
   vl.s = s;
-  for (;;) switch (*s++) {
-  case '\0':
-    goto rtn;
-
+  for (; l--;) switch (*s++) {
   case '"':
     vl.l = s - vl.s - 1;
     goto sep;
 
   case '\\':
-    if (*(s + 0) == '"'
-     || *(s + 0) == '\\')
-      s += 1;
+    if (l > 0
+     && (*(s + 0) == '"'
+     || *(s + 0) == '\\'))
+      l--, s++;
     break;
 
   default:
     break;
   }
+  goto rtn;
 
 nbr:
   vl.s = s - 1;
-  for (;;) switch (*s++) {
-  case '\0':
-    goto rtn;
-
+  for (; l--;) switch (*s++) {
   case '+': case '-': case '.':
   case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
   case 'E': case 'e':
@@ -88,17 +82,15 @@ nbr:
     vl.l = s - vl.s - 1;
     if (c && c(jsonTp_tn, tL, t, &vl, v))
       goto rtn;
-    --s;
+    l++, --s;
     goto bgn;
   }
+  goto rtn;
 
 bgn:
   if (tL && !(t + tL - 1)->s)
     ++(t + tL - 1)->l;
-  for (;;) switch (*s++) {
-  case '\0':
-    goto rtn;
-
+  for (; l--;) switch (*s++) {
   case '\t': case '\n': case '\r': case ' ':
     break;
 
@@ -148,35 +140,38 @@ bgn:
     goto nbr;
 
   case 'f':
-    if (*(s + 0) == 'a'
+    if (l > 3
+     && *(s + 0) == 'a'
      && *(s + 1) == 'l'
      && *(s + 2) == 's'
      && *(s + 3) == 'e') {
       if (c && c(jsonTp_tf, tL, t, 0, v))
         goto rtn;
-      s += 4;
+      l -= 4, s += 4;
       goto bgn;
     } else
       goto err;
 
   case 't':
-    if (*(s + 0) == 'r'
+    if (l > 2
+     && *(s + 0) == 'r'
      && *(s + 1) == 'u'
      && *(s + 2) == 'e') {
       if (c && c(jsonTp_tt, tL, t, 0, v))
         goto rtn;
-      s += 3;
+      l -= 3, s += 3;
       goto bgn;
     } else
       goto err;
 
   case 'n':
-    if (*(s + 0) == 'u'
+    if (l > 2
+     && *(s + 0) == 'u'
      && *(s + 1) == 'l'
      && *(s + 2) == 'l') {
       if (c && c(jsonTp_tu, tL, t, 0, v))
         goto rtn;
-      s += 3;
+      l -= 3, s += 3;
       goto bgn;
     } else
       goto err;
@@ -186,15 +181,15 @@ bgn:
   }
 
 rtn:
-  return s - sb - 1;
+  return s - sb;
 }
 
 int
 jsonDecodeString(
   unsigned char *out
- ,int olen
+ ,unsigned int olen
  ,const unsigned char *in
- ,int ilen
+ ,unsigned int ilen
 ){
   int len;
 
@@ -369,9 +364,9 @@ err:
 int
 jsonEncodeString(
   unsigned char *out
- ,int olen
+ ,unsigned int olen
  ,const unsigned char *in
- ,int ilen
+ ,unsigned int ilen
 ){
   int len;
 
@@ -530,9 +525,9 @@ jsonEncodeString(
 int
 jsonDecodeUri(
   unsigned char *out
- ,int olen
+ ,unsigned int olen
  ,const unsigned char *in
- ,int ilen
+ ,unsigned int ilen
 ){
   int len;
   unsigned char c;
@@ -594,9 +589,9 @@ err:
 int
 jsonEncodeUri(
   char *out
- ,int olen
+ ,unsigned int olen
  ,const unsigned char *in
- ,int ilen
+ ,unsigned int ilen
 ){
   static const char hex[] = "0123456789ABCDEF";
   int len;
@@ -634,9 +629,9 @@ jsonEncodeUri(
 int
 jsonDecodeBase64(
   unsigned char *out
- ,int olen
+ ,unsigned int olen
  ,char const *in
- ,int ilen
+ ,unsigned int ilen
 ){
   static unsigned char const b64[] = {
     66, 66, 66, 66,  66, 66, 66, 66,  66, 64, 64, 66,  66, 64, 66, 66,
@@ -704,9 +699,9 @@ jsonDecodeBase64(
 int
 jsonEncodeBase64(
   char *out
- ,int olen
+ ,unsigned int olen
  ,unsigned char const *in
- ,int ilen
+ ,unsigned int ilen
 ){
   static const char b64[] =
    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

@@ -165,8 +165,7 @@ main(
     if (!(bf = realloc(bf, sz + BUFSIZ)))
       return -1;
   }
-  *(bf + sz) = '\0';
   i = 0;
-  jsonParse(cb, sizeof(tg) / sizeof(tg[0]), tg, bf, &i);
+  jsonParse(cb, sizeof(tg) / sizeof(tg[0]), tg, bf, sz, &i);
   return 0;
 }

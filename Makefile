@@ -1,4 +1,4 @@
-CFLAGS = -Wall -Wextra -Iinc -Os -g
+CFLAGS = -Wall -Wextra -I. -Os -g
 
 all: main print
 
@@ -8,13 +8,13 @@ clean:
 clobber: clean
 	rm -f main print
 
-json.o: src/json.c inc/json.h
-	cc $(CFLAGS) -c -o json.o src/json.c
+json.o: json.c json.h
+	cc $(CFLAGS) -c json.c
 
-main: test/main.c inc/json.h json.o
+main: test/main.c json.h json.o
 	cc $(CFLAGS) -o main test/main.c json.o
 
-print: test/print.c inc/json.h json.o
+print: test/print.c json.h json.o
 	cc $(CFLAGS) -o print test/print.c json.o
 
 run: main print

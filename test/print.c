@@ -15,7 +15,7 @@ cb(
 
   (void)v;
   switch (typ) {
-  case jsonTp_tb:
+  case jsonTp_Jb:
     if (l) {
       for (i = *V ? 1 : 0; i < (int)l; ++i)
         putchar(' ');
@@ -25,7 +25,7 @@ cb(
         printf("\"%.*s\":", (tg + l - 1)->l, (tg + l - 1)->s);
 #if 0
       else
-        printf("%d:", (tg + l - 1)->l);
+        printf("[%d]:", (tg + l - 1)->l);
 #endif
     }
     if (vl)
@@ -34,7 +34,7 @@ cb(
       printf("[\n"/*]*/);
     *V = 0;
     break;
-  case jsonTp_te:
+  case jsonTp_Je:
     if (l) {
       for (i = 0; i < (int)l; ++i)
         putchar(' ');
@@ -42,7 +42,7 @@ cb(
       if ((tg + l - 1)->s)
         printf("\"%.*s\":", (tg + l - 1)->l, (tg + l - 1)->s);
       else
-        printf("%d:", (tg + l - 1)->l);
+        printf("[%d]:", (tg + l - 1)->l);
 #endif
     }
     if (vl)
@@ -51,7 +51,7 @@ cb(
       printf(/*[*/"]\n");
     *V = 1;
     break;
-  case jsonTp_ts:
+  case jsonTp_Js:
     if (l) {
       for (i = *V ? 1 : 0; i < (int)l; ++i)
         putchar(' ');
@@ -61,13 +61,13 @@ cb(
         printf("\"%.*s\":", (tg + l - 1)->l, (tg + l - 1)->s);
 #if 0
       else
-        printf("%d:", (tg + l - 1)->l);
+        printf("[%d]:", (tg + l - 1)->l);
 #endif
     }
     printf("\"%.*s\"\n", vl->l, vl->s);
     *V = 1;
     break;
-  case jsonTp_tn:
+  case jsonTp_Jn:
     if (l) {
       for (i = *V ? 1 : 0; i < (int)l; ++i)
         putchar(' ');
@@ -77,13 +77,13 @@ cb(
         printf("\"%.*s\":", (tg + l - 1)->l, (tg + l - 1)->s);
 #if 0
       else
-        printf("%d:", (tg + l - 1)->l);
+        printf("[%d]:", (tg + l - 1)->l);
 #endif
     }
     printf("%.*s\n", vl->l, vl->s);
     *V = 1;
     break;
-  case jsonTp_tt:
+  case jsonTp_Jt:
     if (l) {
       for (i = *V ? 1 : 0; i < (int)l; ++i)
         putchar(' ');
@@ -93,13 +93,13 @@ cb(
         printf("\"%.*s\":", (tg + l - 1)->l, (tg + l - 1)->s);
 #if 0
       else
-        printf("%d:", (tg + l - 1)->l);
+        printf("[%d]:", (tg + l - 1)->l);
 #endif
     }
     printf("true\n");
     *V = 1;
     break;
-  case jsonTp_tf:
+  case jsonTp_Jf:
     if (l) {
       for (i = *V ? 1 : 0; i < (int)l; ++i)
         putchar(' ');
@@ -109,13 +109,13 @@ cb(
         printf("\"%.*s\":", (tg + l - 1)->l, (tg + l - 1)->s);
 #if 0
       else
-        printf("%d:", (tg + l - 1)->l);
+        printf("[%d]:", (tg + l - 1)->l);
 #endif
     }
     printf("false\n");
     *V = 1;
     break;
-  case jsonTp_tu:
+  case jsonTp_Ju:
     if (l) {
       for (i = *V ? 1 : 0; i < (int)l; ++i)
         putchar(' ');
@@ -125,24 +125,11 @@ cb(
         printf("\"%.*s\":", (tg + l - 1)->l, (tg + l - 1)->s);
 #if 0
       else
-        printf("%d:", (tg + l - 1)->l);
+        printf("[%d]:", (tg + l - 1)->l);
 #endif
     }
     printf("null\n");
     *V = 1;
-    break;
-  case jsonTp_tr:
-    putchar('!');
-    putchar(' ');
-    if (l) {
-      for (i = 0; i < (int)l; ++i)
-        if ((tg + i)->s)
-          printf("/\"%.*s\"", (tg + i)->l, (tg + i)->s);
-        else
-          printf("/%d", (tg + i)->l);
-    } else
-      putchar('/');
-    printf(":%.*s\n", vl->l, vl->s);
     break;
   }
   return 0;

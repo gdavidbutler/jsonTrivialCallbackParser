@@ -34,13 +34,10 @@ jsonParse(
   if (!(sb = s))
     return -1;
   tL = 0;
+
   goto bgn;
 
 err:
-  vl.l = 1;
-  vl.s = s - 1;
-  if (c)
-    c(jsonTp_tr, tL, t, &vl, v);
   l++, s--;
   goto rtn;
 
@@ -57,7 +54,7 @@ sep:
     goto bgn;
 
   default:
-    if (c && c(jsonTp_ts, tL, t, &vl, v))
+    if (c && c(jsonTp_Js, tL, t, &vl, v))
       goto rtn;
     l++, --s;
     goto bgn;
@@ -93,7 +90,7 @@ nbr:
 
   default:
     vl.l = s - vl.s - 1;
-    if (c && c(jsonTp_tn, tL, t, &vl, v))
+    if (c && c(jsonTp_Jn, tL, t, &vl, v))
       goto rtn;
     l++, --s;
     goto bgn;
@@ -113,7 +110,7 @@ bgn:
   case '[':/*']'*/
     if (tL == m)
       goto rtn;
-    if (c && c(jsonTp_tb, tL, t, 0, v))
+    if (c && c(jsonTp_Jb, tL, t, 0, v))
       goto rtn;
     (t + tL)->s = 0;
     (t + tL)->l = 0;
@@ -124,14 +121,15 @@ bgn:
     if (!tL)
       goto err;
     --tL;
-    if (c && c(jsonTp_te, tL, t, 0, v))
+    if (c && c(jsonTp_Je, tL, t, 0, v))
       goto rtn;
     goto bgn;
 
   case '{':/*'}'*/
     if (tL == m)
       goto rtn;
-    if (c && c(jsonTp_tb, tL, t, &vl, v))
+    vl.s = 0, vl.l = 0;
+    if (c && c(jsonTp_Jb, tL, t, &vl, v))
       goto rtn;
     (t + tL)->s = s;
     ++tL;
@@ -141,7 +139,8 @@ bgn:
     if (!tL)
       goto err;
     --tL;
-    if (c && c(jsonTp_te, tL, t, &vl, v))
+    vl.s = 0, vl.l = 0;
+    if (c && c(jsonTp_Je, tL, t, &vl, v))
       goto rtn;
     goto bgn;
 
@@ -158,7 +157,7 @@ bgn:
      && *(s + 1) == 'l'
      && *(s + 2) == 's'
      && *(s + 3) == 'e') {
-      if (c && c(jsonTp_tf, tL, t, 0, v))
+      if (c && c(jsonTp_Jf, tL, t, 0, v))
         goto rtn;
       l -= 4, s += 4;
       goto bgn;
@@ -170,7 +169,7 @@ bgn:
      && *(s + 0) == 'r'
      && *(s + 1) == 'u'
      && *(s + 2) == 'e') {
-      if (c && c(jsonTp_tt, tL, t, 0, v))
+      if (c && c(jsonTp_Jt, tL, t, 0, v))
         goto rtn;
       l -= 3, s += 3;
       goto bgn;
@@ -182,7 +181,7 @@ bgn:
      && *(s + 0) == 'u'
      && *(s + 1) == 'l'
      && *(s + 2) == 'l') {
-      if (c && c(jsonTp_tu, tL, t, 0, v))
+      if (c && c(jsonTp_Ju, tL, t, 0, v))
         goto rtn;
       l -= 3, s += 3;
       goto bgn;

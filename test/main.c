@@ -17,7 +17,7 @@ cb(
 
   (void)v;
   switch (typ) {
-  case jsonTp_tb:
+  case jsonTp_Jb:
     putchar('B');
     putchar(' ');
     if (l) {
@@ -25,7 +25,7 @@ cb(
         if ((tg + i)->s)
           printf("/\"%.*s\"", (tg + i)->l, (tg + i)->s);
         else
-          printf("/%d", (tg + i)->l);
+          printf("/[%d]", (tg + i)->l);
     } else
       putchar('/');
     if (vl)
@@ -33,7 +33,7 @@ cb(
     else
       printf("[\n"/*]*/);
     break;
-  case jsonTp_te:
+  case jsonTp_Je:
     putchar('E');
     putchar(' ');
     if (l) {
@@ -41,7 +41,7 @@ cb(
         if ((tg + i)->s)
           printf("/\"%.*s\"", (tg + i)->l, (tg + i)->s);
         else
-          printf("/%d", (tg + i)->l);
+          printf("/[%d]", (tg + i)->l);
     } else
       putchar('/');
     if (vl)
@@ -49,7 +49,7 @@ cb(
     else
       printf(/*[*/"]\n");
     break;
-  case jsonTp_ts:
+  case jsonTp_Js:
     putchar('S');
     putchar(' ');
     if (l) {
@@ -57,12 +57,12 @@ cb(
         if ((tg + i)->s)
           printf("/\"%.*s\"", (tg + i)->l, (tg + i)->s);
         else
-          printf("/%d", (tg + i)->l);
+          printf("/[%d]", (tg + i)->l);
     } else
       putchar('/');
     printf(": %.*s\n", vl->l, vl->s);
     break;
-  case jsonTp_tn:
+  case jsonTp_Jn:
     putchar('N');
     putchar(' ');
     if (l) {
@@ -70,12 +70,12 @@ cb(
         if ((tg + i)->s)
           printf("/\"%.*s\"", (tg + i)->l, (tg + i)->s);
         else
-          printf("/%d", (tg + i)->l);
+          printf("/[%d]", (tg + i)->l);
     } else
       putchar('/');
     printf(": %.*s\n", vl->l, vl->s);
     break;
-  case jsonTp_tt:
+  case jsonTp_Jt:
     putchar('T');
     putchar(' ');
     if (l) {
@@ -83,12 +83,12 @@ cb(
         if ((tg + i)->s)
           printf("/\"%.*s\"", (tg + i)->l, (tg + i)->s);
         else
-          printf("/%d", (tg + i)->l);
+          printf("/[%d]", (tg + i)->l);
     } else
       putchar('/');
     putchar('\n');
     break;
-  case jsonTp_tf:
+  case jsonTp_Jf:
     putchar('F');
     putchar(' ');
     if (l) {
@@ -96,12 +96,12 @@ cb(
         if ((tg + i)->s)
           printf("/\"%.*s\"", (tg + i)->l, (tg + i)->s);
         else
-          printf("/%d", (tg + i)->l);
+          printf("/[%d]", (tg + i)->l);
     } else
       putchar('/');
     putchar('\n');
     break;
-  case jsonTp_tu:
+  case jsonTp_Ju:
     putchar('U');
     putchar(' ');
     if (l) {
@@ -109,23 +109,10 @@ cb(
         if ((tg + i)->s)
           printf("/\"%.*s\"", (tg + i)->l, (tg + i)->s);
         else
-          printf("/%d", (tg + i)->l);
+          printf("/[%d]", (tg + i)->l);
     } else
       putchar('/');
     putchar('\n');
-    break;
-  case jsonTp_tr:
-    putchar('!');
-    putchar(' ');
-    if (l) {
-      for (i = 0; i < (int)l; ++i)
-        if ((tg + i)->s)
-          printf("/\"%.*s\"", (tg + i)->l, (tg + i)->s);
-        else
-          printf("/%d", (tg + i)->l);
-    } else
-      putchar('/');
-    printf(":(%.*s)\n", vl->l, vl->s);
     break;
   }
   return 0;

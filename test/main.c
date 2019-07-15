@@ -60,7 +60,18 @@ cb(
           printf("/[%d]", (tg + i)->l);
     } else
       putchar('/');
-    printf(": %.*s\n", vl->l, vl->s);
+    {
+      unsigned char *d;
+
+      i = -1;
+      if (!(d = malloc(vl->l))
+       || (i = jsonDecodeString(d, vl->l, vl->s, vl->l)) < 0
+       || i > (int)vl->l)
+        printf(": \"%.*s\"(%d:%u)\n", vl->l, vl->s, i, vl->l);
+      else
+        printf(": \"%.*s\"(%.*s)\n", vl->l, vl->s, i, d);
+      free(d);
+    }
     break;
   case jsonTp_Jn:
     putchar('N');

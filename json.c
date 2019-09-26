@@ -32,7 +32,7 @@ jsonParse(
   jsonSt_t vl;
 
   if (!(sb = s))
-    return -1;
+    return (-1);
   tL = 0;
 
   goto bgn;
@@ -193,7 +193,7 @@ bgn:
   }
 
 rtn:
-  return s - sb;
+  return (s - sb);
 }
 
 int
@@ -437,9 +437,9 @@ sur:
       goto err;
     break;
   }
-  return len;
+  return (len);
 err:
-  return -1;
+  return (-1);
 }
 
 int
@@ -457,7 +457,7 @@ jsonEncodeString(
                                    case 0x0b:                       case 0x0e: case 0x0f:
   case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15: case 0x16: case 0x17:
   case 0x18: case 0x19: case 0x1a: case 0x1b: case 0x1c: case 0x1d: case 0x1e: case 0x1f:
-    return -1;
+    return (-1);
     break;
   case '\b': /* 0x08 */
     if (olen > 1) {
@@ -597,10 +597,10 @@ jsonEncodeString(
         in += 6;
       len += 6;
     } else
-      return -1;
+      return (-1);
     break;
   }
-  return len;
+  return (len);
 }
 
 int
@@ -662,9 +662,9 @@ nxtH:
     len++;
     break;
   }
-  return len;
+  return (len);
 err:
-  return -1;
+  return (-1);
 }
 
 int
@@ -704,7 +704,7 @@ jsonEncodeUri(
     len += 3;
     break;
   }
-  return len;
+  return (len);
 }
 
 int
@@ -742,7 +742,7 @@ jsonDecodeBase64(
 
     switch ((c = b64[*(unsigned char*)in++])) {
     case 66: /* invalid */
-      return -1;
+      return (-1);
     case 64: /* whitespace */
       continue;
     case 65: /* pad */
@@ -774,7 +774,7 @@ jsonDecodeBase64(
       *out++ = buf >> 4;
     len++;
   }
-  return len;
+  return (len);
 }
 
 int
@@ -811,5 +811,5 @@ jsonEncodeBase64(
     }
     len += 4;
   }
-  return len;
+  return (len);
 }

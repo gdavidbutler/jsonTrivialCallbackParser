@@ -143,7 +143,7 @@ cb(
     *V = 1;
     break;
   }
-  return 0;
+  return (0);
 }
 #undef V
 
@@ -156,14 +156,14 @@ main(
   int i;
 
   if (!(bf = malloc(BUFSIZ)))
-    return -1;
+    return (-1);
   sz = 0;
   while ((i = fread(bf + sz, 1, BUFSIZ, stdin)) > 0) {
     sz += i;
     if (!(bf = realloc(bf, sz + BUFSIZ)))
-      return -1;
+      return (-1);
   }
   i = 0;
-  jsonParse(cb, sizeof(tg) / sizeof(tg[0]), tg, bf, sz, &i);
-  return 0;
+  jsonParse(cb, sizeof (tg) / sizeof (tg[0]), tg, bf, sz, &i);
+  return (0);
 }

@@ -126,7 +126,7 @@ cb(
     putchar('\n');
     break;
   }
-  return 0;
+  return (0);
 }
 
 int
@@ -149,58 +149,58 @@ main(
     unsigned char *tbf;
 
     if (!(bf = malloc(BUFSIZ)))
-      return 2;
-    if ((sz = jsonEncodeString(bf, BUFSIZ, enc, sizeof(enc) - 1)) > BUFSIZ)
-      return 2;
+      return (2);
+    if ((sz = jsonEncodeString(bf, BUFSIZ, enc, sizeof (enc) - 1)) > BUFSIZ)
+      return (2);
     printf("jsonEncodeString()->%.*s\n", sz, bf);
     putchar('\n');
     if (!(tbf = malloc(BUFSIZ)))
-      return 2;
+      return (2);
     if ((sz = jsonDecodeString(tbf, BUFSIZ, bf, sz)) > BUFSIZ)
-      return 2;
-    if (sz != sizeof(enc) - 1 || memcmp(tbf, enc, sizeof(enc) - 1))
-      return 2;
+      return (2);
+    if (sz != sizeof (enc) - 1 || memcmp(tbf, enc, sizeof (enc) - 1))
+      return (2);
     free(tbf);
-    if ((sz = jsonDecodeString(bf, BUFSIZ, dnc, sizeof(dnc) - 1)) > BUFSIZ)
-      return 2;
+    if ((sz = jsonDecodeString(bf, BUFSIZ, dnc, sizeof (dnc) - 1)) > BUFSIZ)
+      return (2);
     printf("jsonDecodeString(%s)->%.*s\n", dnc, sz, bf);
     putchar('\n');
-    if ((sz = jsonDecodeUri(bf, BUFSIZ, uri, sizeof(uri) - 1)) > BUFSIZ)
-      return 2;
+    if ((sz = jsonDecodeUri(bf, BUFSIZ, uri, sizeof (uri) - 1)) > BUFSIZ)
+      return (2);
     printf("jsonDecodeUri(%s)\n->\n%.*s\n", uri, sz, bf);
     putchar('\n');
-    if ((sz = jsonEncodeUri((char *)bf, BUFSIZ, iru, sizeof(iru) - 1)) > BUFSIZ)
-      return 2;
+    if ((sz = jsonEncodeUri((char *)bf, BUFSIZ, iru, sizeof (iru) - 1)) > BUFSIZ)
+      return (2);
     printf("jsonEncodeUri(%s)\n->\n%.*s\n", iru, sz, bf);
     putchar('\n');
-    if ((sz = jsonDecodeBase64((unsigned char *)bf, BUFSIZ, b64, sizeof(b64) - 1)) > BUFSIZ)
-      return 2;
+    if ((sz = jsonDecodeBase64((unsigned char *)bf, BUFSIZ, b64, sizeof (b64) - 1)) > BUFSIZ)
+      return (2);
     printf("jsonDecodeBase64(%s)\n->\n%.*s\n", b64, sz, bf);
     putchar('\n');
-    if ((sz = jsonEncodeBase64((char *)bf, BUFSIZ, s64, sizeof(s64) - 1)) > BUFSIZ)
-      return 2;
+    if ((sz = jsonEncodeBase64((char *)bf, BUFSIZ, s64, sizeof (s64) - 1)) > BUFSIZ)
+      return (2);
     printf("jsonEncodeBase64(%s)\n->\n%.*s\n", s64, sz, bf);
     putchar('\n');
     free(bf);
-    return 0;
+    return (0);
   }
   if (argc != 3) {
     fprintf(stderr, "Usage: %s any | 0|1 file\n", argv[0]);
-    return 1;
+    return (1);
   }
   if ((fd = open(argv[2], O_RDONLY)) < 0) {
     fprintf(stderr, "%s: Can't open %s\n", argv[0], argv[2]);
-    return 1;
+    return (1);
   }
   sz = lseek(fd, 0, SEEK_END);
   lseek(fd, 0, SEEK_SET);
   bf = malloc(sz);
   if (read(fd, bf, sz) != sz) {
     fprintf(stderr, "%s: read fail on %s\n", argv[0], argv[2]);
-    return 1;
+    return (1);
   }
   close(fd);
-  printf("%d %d\n", sz, jsonParse(atoi(argv[1]) ? cb : 0, sizeof(tg) / sizeof(tg[0]), tg, bf, sz, 0));
+  printf("%d %d\n", sz, jsonParse(atoi(argv[1]) ? cb : 0, sizeof (tg) / sizeof (tg[0]), tg, bf, sz, 0));
   free(bf);
-  return 0;
+  return (0);
 }

@@ -59,6 +59,8 @@ sep:
     l++, --s;
     goto bgn;
   }
+  if (c)
+    c(jsonTp_Js, tL, t, &vl, v);
   goto rtn;
 
 str:
@@ -95,6 +97,8 @@ nbr:
     l++, --s;
     goto bgn;
   }
+  if (c)
+    c(jsonTp_Jn, tL, t, &vl, v);
   goto rtn;
 
 bgn:

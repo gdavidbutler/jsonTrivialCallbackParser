@@ -71,9 +71,9 @@ cb(
       if (!(d = malloc(vl->l))
        || (i = jsonDecodeString(d, vl->l, vl->s, vl->l)) < 0
        || i > (int)vl->l)
-        printf("%.*s\n", vl->l, vl->s);
+        printf("\"%.*s\"\n", vl->l, vl->s);
       else
-        printf("%.*s\n", i, d);
+        printf("\"%.*s\"\n", i, d);
       free(d);
     }
     *V = 1;

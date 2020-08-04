@@ -114,7 +114,8 @@ bgn:
   case '[':/*']'*/
     if (tL == m)
       goto rtn;
-    if (c && c(jsonTp_Jb, tL, t, 0, v))
+    vl.s = s - 1, vl.l = 0;
+    if (c && c(jsonTp_Jb, tL, t, &vl, v))
       goto rtn;
     (t + tL)->s = 0;
     (t + tL)->l = 0;
@@ -125,14 +126,15 @@ bgn:
     if (!tL)
       goto err;
     --tL;
-    if (c && c(jsonTp_Je, tL, t, 0, v))
+    vl.s = s - 1, vl.l = 0;
+    if (c && c(jsonTp_Je, tL, t, &vl, v))
       goto rtn;
     goto bgn;
 
   case '{':/*'}'*/
     if (tL == m)
       goto rtn;
-    vl.s = 0, vl.l = 0;
+    vl.s = s - 1, vl.l = 1;
     if (c && c(jsonTp_Jb, tL, t, &vl, v))
       goto rtn;
     (t + tL)->s = s;
@@ -143,7 +145,7 @@ bgn:
     if (!tL)
       goto err;
     --tL;
-    vl.s = 0, vl.l = 0;
+    vl.s = s - 1, vl.l = 1;
     if (c && c(jsonTp_Je, tL, t, &vl, v))
       goto rtn;
     goto bgn;

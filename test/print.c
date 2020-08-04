@@ -28,7 +28,7 @@ cb(
         printf("[%d]:", (tg + l - 1)->l);
 #endif
     }
-    if (vl)
+    if (vl->l)
       printf("{\n"/*}*/);
     else
       printf("[\n"/*]*/);
@@ -45,7 +45,7 @@ cb(
         printf("[%d]:", (tg + l - 1)->l);
 #endif
     }
-    if (vl)
+    if (vl->l)
       printf(/*{*/"}\n");
     else
       printf(/*[*/"]\n");

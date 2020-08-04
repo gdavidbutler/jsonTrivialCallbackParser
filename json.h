@@ -24,8 +24,8 @@ typedef struct {
 
 /* callback event types */
 typedef enum {
-  jsonTp_Jb /* begin - value is NULL if array, else object */
- ,jsonTp_Je /* end - value is NULL if array, else object */
+  jsonTp_Jb /* begin - value->l is zero if array else object, value->s points to '[' or '{' */
+ ,jsonTp_Je /* end - value->l is zero if array, else object, value->s points to ']' or '}' */
  ,jsonTp_Js /* string */
  ,jsonTp_Jn /* number */
  ,jsonTp_Jt /* true */

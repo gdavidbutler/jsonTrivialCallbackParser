@@ -39,7 +39,7 @@ typedef int (*jsonCb_t)(
   jsonTp_t
  ,unsigned int numberOfLevels
  ,const jsonSt_t *level /* ->s is NULL if array element at offset ->l, otherwise attribute name with length ->l */
- ,const jsonSt_t *value /* for begin/end, is NULL if array else object */
+ ,const jsonSt_t *value
  ,void *userContext
 );
 

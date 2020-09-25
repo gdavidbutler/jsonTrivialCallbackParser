@@ -5,9 +5,8 @@ No dependencies. No dynamic memory allocation. No recursion. No memory copying. 
 
 No JSON validation! To simply "*check*" that a JSON string can be parsed, use a NULL callback and verify the return offset is the same as the source length.
 
-Also included are some "coders", often used by JSON:
+Also included is a "coder", often used by JSON:
 
-* URI encode and decode
 * Base64 encode and decode
 
 Some examples of using this:

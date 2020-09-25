@@ -72,24 +72,6 @@ int jsonEncodeString(
  ,unsigned int ilen
 );
 
-/* return -1 on error else the length of out */
-/* if length returned is more than length provided, allocate needed memory and retry */
-int jsonDecodeUri(
-  unsigned char *out
- ,unsigned int olen
- ,const unsigned char *in
- ,unsigned int ilen
-);
-
-/* return -1 on error else the length of out */
-/* if length returned is more than length provided, allocate needed memory and retry */
-int jsonEncodeUri(
-  char *out
- ,unsigned int olen
- ,const unsigned char *in
- ,unsigned int ilen
-);
-
 /* estimated length of needed out buffer */
 #define jsonDecodeBase64Need(inl) (((inl + 3) / 4) * 3)
 

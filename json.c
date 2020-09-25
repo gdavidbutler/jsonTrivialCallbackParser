@@ -465,6 +465,7 @@ jsonEncodeString(
  ,const unsigned char *in
  ,unsigned int ilen
 ){
+  static const char hex[] = "0123456789ABCDEF";
   int len;
 
   len = 0;
@@ -473,8 +474,17 @@ jsonEncodeString(
                                    case 0x0b:                       case 0x0e: case 0x0f:
   case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15: case 0x16: case 0x17:
   case 0x18: case 0x19: case 0x1a: case 0x1b: case 0x1c: case 0x1d: case 0x1e: case 0x1f:
-                                                                               case 0x7f:
-    return (-1);
+    if (olen > 5) {
+      *out++ = '\\';
+      *out++ = 'u';
+      *out++ = '0';
+      *out++ = '0';
+      *out++ = hex[*in >> 4];
+      *out++ = hex[*in & 0x0f];
+      olen -= 6;
+    }
+    in++;
+    len += 6;
     break;
   case '\b': /* 0x08 */
     if (olen > 1) {
@@ -625,110 +635,6 @@ jsonEncodeString(
       ilen -= 5;
     } else
       return (-1);
-    break;
-  }
-  return (len);
-}
-
-int
-jsonDecodeUri(
-  unsigned char *out
- ,unsigned int olen
- ,const unsigned char *in
- ,unsigned int ilen
-){
-  int len;
-  unsigned char c;
-
-  len = 0;
-  for (; ilen--;) switch (*in) {
-  case '%':
-    if (!(in++,ilen--)) goto err; else switch (*in) {
-    case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
-      c = *in - '0';
-      goto nxtH;
-    case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
-      c = 10 + (*in - 'A');
-      goto nxtH;
-    case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
-      c = 10 + (*in - 'a');
-nxtH:
-      if (!(in++,ilen--)) goto err; else switch (*in) {
-      case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
-        c *= 16;
-        c += *in - '0';
-        break;
-      case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
-        c *= 16;
-        c += 10 + (*in - 'A');
-        break;
-      case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
-        c *= 16;
-        c += 10 + (*in - 'a');
-        break;
-      default:
-        goto err;
-      }
-      if (olen > 0) {
-        *out++ = c;
-        olen--;
-      }
-      in++;
-      len++;
-      break;
-    default:
-      goto err;
-    }
-    break;
-  default:
-    if (olen > 0) {
-      *out++ = *in;
-      olen--;
-    }
-    in++;
-    len++;
-    break;
-  }
-  return (len);
-err:
-  return (-1);
-}
-
-int
-jsonEncodeUri(
-  char *out
- ,unsigned int olen
- ,const unsigned char *in
- ,unsigned int ilen
-){
-  static const char hex[] = "0123456789ABCDEF";
-  int len;
-
-  len = 0;
-  for (; ilen--;) switch (*in) { case '-': case '.':
-  case '0': case'1': case'2': case'3': case'4': case'5': case'6': case'7': case'8': case'9':
-  case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': case 'G': case 'H': case 'I': case 'J': case 'K': case 'L': case 'M':
-  case 'N': case 'O': case 'P': case 'Q': case 'R': case 'S': case 'T': case 'U': case 'V': case 'W': case 'X': case 'Y': case 'Z':
-  case '_':
-  case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': case 'g': case 'h': case 'i': case 'j': case 'k': case 'l': case 'm':
-  case 'n': case 'o': case 'p': case 'q': case 'r': case 's': case 't': case 'u': case 'v': case 'w': case 'x': case 'y': case 'z':
-  case '~':
-    if (olen > 0) {
-      *out++ = *in;
-      olen--;
-    }
-    in++;
-    len++;
-    break;
-  default:
-    if (olen > 2) {
-      *out++ = '%';
-      *out++ = hex[*in >> 4];
-      *out++ = hex[*in & 0x0f];
-      olen -= 3;
-    }
-    in++;
-    len += 3;
     break;
   }
   return (len);

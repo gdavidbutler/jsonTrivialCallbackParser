@@ -3,7 +3,10 @@ Trivial [JSON](https://tools.ietf.org/rfc/rfc8259.txt) callback parser in standa
 
 No dependencies. No dynamic memory allocation. No recursion. No memory copying. Small and Fast.
 
-No JSON validation! To simply "*check*" that a JSON string can be parsed, use a NULL callback and verify the return offset is the same as the source length.
+This is **not** a validating parser!
+To *check* that a JSON string can be parsed, use a NULL callback and verify the return offset is the same as the source length.
+
+For a DOM parser, see my [jsonTrivialDom](https://github.com/gdavidbutler/jsonTrivialDom).
 
 Also included is a "coder", often used by JSON:
 

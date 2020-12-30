@@ -29,9 +29,9 @@ cb(
     } else
       putchar('/');
     if (vl->l)
-      printf("{ @%p %c\n"/*}*/, vl->s, *vl->s);
+      printf("{ @%p %c\n"/*}*/, (void *)vl->s, *vl->s);
     else
-      printf("[ @%p %c\n"/*]*/, vl->s, *vl->s);
+      printf("[ @%p %c\n"/*]*/, (void *)vl->s, *vl->s);
     break;
   case jsonTp_Je:
     putchar('E');
@@ -45,9 +45,9 @@ cb(
     } else
       putchar('/');
     if (vl->l)
-      printf(/*{*/"} @%p %c\n", vl->s, *vl->s);
+      printf(/*{*/"} @%p %c\n", (void *)vl->s, *vl->s);
     else
-      printf(/*[*/"] @%p %c\n", vl->s, *vl->s);
+      printf(/*[*/"] @%p %c\n", (void *)vl->s, *vl->s);
     break;
   case jsonTp_Js:
     putchar('S');

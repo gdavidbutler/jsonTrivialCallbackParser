@@ -138,6 +138,7 @@ bgn:
     if (c && c(jsonTp_Jb, tL, t, &vl, v))
       goto rtn;
     (t + tL)->s = s;
+    (t + tL)->l = 0;
     ++tL;
     goto bgn;
 

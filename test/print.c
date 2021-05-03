@@ -165,5 +165,6 @@ main(
   }
   i = 0;
   jsonParse(cb, sizeof (tg) / sizeof (tg[0]), tg, bf, sz, &i);
+  free(bf);
   return (0);
 }

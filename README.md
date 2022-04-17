@@ -14,7 +14,9 @@ Also included is a "coder", often used by JSON:
 
 Some examples of using this:
 
-* test/main.c: example of using the coders (./main coder) and parsing nasty JSON constructs (./main 1 test/test.json).
+* test/coders.c: example of using the coders.
+* test/main.c: example of checking (./main 0 test/test.json) and parsing JSON (./main 1 test/test.json).
+* test/dom.c: example of using the C structure tree (./dom test/test.json).
 * test/print.c: JSON on standard input and indented JSON on standard output (./print < test/test.json).
 
 Note: test.json is the file pass1.json from a zip file [here](http://www.json.org/JSON_checker/test.zip).

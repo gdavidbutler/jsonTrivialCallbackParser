@@ -18,7 +18,10 @@ cb(
   (void)v;
   switch (typ) {
   case jsonTp_Jb:
-    putchar('B');
+    if (vl->l)
+      putchar('O');
+    else
+      putchar('A');
     putchar(' ');
     if (l) {
       for (i = 0; i < (int)l; ++i)
@@ -28,13 +31,13 @@ cb(
           printf("/[%d]", (tg + i)->l);
     } else
       putchar('/');
-    if (vl->l)
-      printf("{ @%p %c\n"/*}*/, (void *)vl->s, *vl->s);
-    else
-      printf("[ @%p %c\n"/*]*/, (void *)vl->s, *vl->s);
+    printf(" @%p %c\n", (void *)vl->s, *vl->s);
     break;
   case jsonTp_Je:
-    putchar('E');
+    if (vl->l)
+      putchar('o');
+    else
+      putchar('a');
     putchar(' ');
     if (l) {
       for (i = 0; i < (int)l; ++i)
@@ -44,10 +47,7 @@ cb(
           printf("/[%d]", (tg + i)->l);
     } else
       putchar('/');
-    if (vl->l)
-      printf(/*{*/"} @%p %c\n", (void *)vl->s, *vl->s);
-    else
-      printf(/*[*/"] @%p %c\n", (void *)vl->s, *vl->s);
+    printf(" @%p %c\n", (void *)vl->s, *vl->s);
     break;
   case jsonTp_Js:
     putchar('S');
@@ -139,43 +139,8 @@ main(
   int sz;
   unsigned char *bf;
 
-  if (argc == 2) {
-    static const unsigned char enc[] = "This is a test of \"\\\b\t\f\n\r\" how did it do?";
-    static const unsigned char dnc[] = "This is a test of\\n(c) white on black \\u00a9\\n(c) black on white \\uD83C\\uDD52\\nhow did it do?";
-    static const char b64[] = "QmFzZTY0";
-    static const unsigned char s64[] = "Base64";
-    unsigned char *tbf;
-
-    if (!(bf = malloc(BUFSIZ)))
-      return (2);
-    if ((sz = jsonEncodeString(bf, BUFSIZ, enc, sizeof (enc) - 1)) > BUFSIZ)
-      return (2);
-    printf("jsonEncodeString()->%.*s\n", sz, bf);
-    putchar('\n');
-    if (!(tbf = malloc(BUFSIZ)))
-      return (2);
-    if ((sz = jsonDecodeString(tbf, BUFSIZ, bf, sz)) > BUFSIZ)
-      return (2);
-    if (sz != sizeof (enc) - 1 || memcmp(tbf, enc, sizeof (enc) - 1))
-      return (2);
-    free(tbf);
-    if ((sz = jsonDecodeString(bf, BUFSIZ, dnc, sizeof (dnc) - 1)) > BUFSIZ)
-      return (2);
-    printf("jsonDecodeString(%s)->%.*s\n", dnc, sz, bf);
-    putchar('\n');
-    if ((sz = jsonDecodeBase64((unsigned char *)bf, BUFSIZ, b64, sizeof (b64) - 1)) > BUFSIZ)
-      return (2);
-    printf("jsonDecodeBase64(%s)\n->\n%.*s\n", b64, sz, bf);
-    putchar('\n');
-    if ((sz = jsonEncodeBase64((char *)bf, BUFSIZ, s64, sizeof (s64) - 1)) > BUFSIZ)
-      return (2);
-    printf("jsonEncodeBase64(%s)\n->\n%.*s\n", s64, sz, bf);
-    putchar('\n');
-    free(bf);
-    return (0);
-  }
   if (argc != 3) {
-    fprintf(stderr, "Usage: %s any | 0|1 file\n", argv[0]);
+    fprintf(stderr, "Usage: %s 0|1 file\n", argv[0]);
     return (1);
   }
   if ((fd = open(argv[2], O_RDONLY)) < 0) {

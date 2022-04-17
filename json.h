@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/* pointers referencing fragments of constant buffer must include length */
+/* json "string" (fragment) is not \0 terminated */
 typedef struct {
   const unsigned char *s;
   unsigned int l;
@@ -25,12 +25,12 @@ typedef struct {
 /* callback event types */
 typedef enum {
   jsonTp_Jb /* begin - value->l is zero if array else object, value->s points to '[' or '{' */
- ,jsonTp_Je /* end - value->l is zero if array, else object, value->s points to ']' or '}' */
  ,jsonTp_Js /* string */
  ,jsonTp_Jn /* number */
  ,jsonTp_Jt /* true */
  ,jsonTp_Jf /* false */
  ,jsonTp_Ju /* null */
+ ,jsonTp_Je /* end - value->l is zero if array, else object, value->s points to ']' or '}' */
 } jsonTp_t;
 
 /* prototype of a callback function */
@@ -94,4 +94,54 @@ int jsonEncodeBase64(
  ,unsigned int olen
  ,const unsigned char *in
  ,unsigned int ilen
+);
+
+/* JSON document node */
+typedef struct jsonNode {
+  struct jsonNode *parent;
+  struct jsonNode **node;   /* array of nodes */
+  const unsigned char *beg; /* pointer to JSON begin '{' or '[' */
+  const unsigned char *end; /* pointer to JSON end '}' or ']' */
+  void *user;               /* user data (not used by jsonNode) */
+  jsonSt_t name;            /* name or offset (.s=0) */
+  jsonSt_t value;           /* value for jsonTp_Js or jsonTp->jn */
+  jsonTp_t type;            /* type (jsonTp_Jb=object jsonTp_Je=array) */
+  unsigned int nodeN;       /* number of nodes */
+  unsigned int nodeW;       /* walk node */
+} jsonNode_t;
+
+/* parse a JSON document of len with(out) white bodies into an allocated JSON node */
+/* return -1 on error else offset of last char parsed */
+/* the node is allocated with all that was parseable */
+int
+json2node(
+  void *(*realloc)(void *, unsigned long)
+ ,jsonNode_t *node
+ ,jsonSt_t *elementTagBuf
+ ,const unsigned char *json
+ ,unsigned int numberOfElementTagBuf
+ ,unsigned int xlen
+);
+
+/* jsonNode walk visit types */
+typedef enum {
+  jsonNodeVisitPreorder
+ ,jsonNodeVisitInorder
+ ,jsonNodeVisitPostorder
+ ,jsonNodeVisitLeaf
+} jsonNodeVisit_t;
+
+/* walk a jsonNode calling action on node with closure */
+void
+jsonNodeWalk(
+  jsonNode_t *n
+ ,void (*action)(jsonNode_t *node, unsigned int depth, jsonNodeVisit_t visit, void *closure)
+ ,void *closure
+);
+
+/* deallocate a jsonNode tree */
+void
+jsonNodeFree(
+  void (*free)(void *)
+ ,jsonNode_t *node
 );

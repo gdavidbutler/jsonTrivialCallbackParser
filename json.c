@@ -747,3 +747,147 @@ jsonEncodeBase64(
   }
   return (len);
 }
+
+/* jsonNode routines */
+
+struct jsonNodeCx {
+  void *(*a)(void *, unsigned long);
+  jsonNode_t *n;
+};
+
+static int
+jsonNodeCb(
+  jsonTp_t t
+ ,unsigned int l
+ ,const jsonSt_t *g
+ ,const jsonSt_t *v
+ ,void *x
+#define X ((struct jsonNodeCx *)x)
+){
+  jsonNode_t *tn;
+  void *tv;
+
+  switch (t) {
+
+  case jsonTp_Jb:
+    if (!(tv = X->a(X->n->node, (X->n->nodeN + 1) * sizeof (*X->n->node))))
+      goto exit;
+    X->n->node = tv;
+    if (!(tn = X->a(0, sizeof (*tn))))
+      goto exit;
+    *(X->n->node + X->n->nodeN++) = tn;
+    tn->parent = X->n;
+    tn->node = 0;
+    tn->beg = v->s;
+    tn->user = 0;
+    tn->name.s = l ? (g + (l - 1))->s : 0;
+    tn->name.l = l ? (g + (l - 1))->l : 0;
+    tn->value.s = 0;
+    tn->value.l = 0;
+    tn->type = v->l ? jsonTp_Jb : jsonTp_Je;
+    tn->nodeN = 0;
+    tn->nodeW = 0;
+    X->n = tn;
+    break;
+
+  case jsonTp_Je:
+    X->n->end = v->s;
+    X->n = X->n->parent;
+    break;
+
+  default:
+    if (!(tv = X->a(X->n->node, (X->n->nodeN + 1) * sizeof (*X->n->node))))
+      goto exit;
+    X->n->node = tv;
+    if (!(tn = X->a(0, sizeof (*tn))))
+      goto exit;
+    *(X->n->node + X->n->nodeN++) = tn;
+    tn->parent = X->n;
+    tn->node = 0;
+    tn->user = 0;
+    tn->name.s = l ? (g + (l - 1))->s : 0;
+    tn->name.l = l ? (g + (l - 1))->l : 0;
+    tn->value.s = v ? v->s : 0;
+    tn->value.l = v ? v->l : 0;
+    tn->type = t;
+    tn->nodeN = 0;
+    tn->nodeW = 0;
+    break;
+  }
+  return (0);
+exit:
+  return (1);
+}
+#undef X
+
+int
+json2node(
+  void *(*a)(void *, unsigned long)
+ ,jsonNode_t *n
+ ,jsonSt_t *t
+ ,const unsigned char *s
+ ,unsigned int m
+ ,unsigned int l
+){
+  struct jsonNodeCx cx;
+
+  if (!a || !n || !m || !t || !s)
+    return (-1);
+  if (!l)
+    return (0);
+  cx.a = a;
+  cx.n = n;
+  return (jsonParse(jsonNodeCb, m, t, s, l, &cx));
+}
+
+void
+jsonNodeWalk(
+  jsonNode_t *n
+ ,void (*a)(jsonNode_t *, unsigned int, jsonNodeVisit_t, void *)
+ ,void *c
+){
+  unsigned int d;
+
+  d = 0;
+  while (n) {
+    if (!n->nodeN) {
+      a(n, d, jsonNodeVisitLeaf, c);
+      n = n->parent;
+      --d;
+      continue;
+    }
+    if (!n->nodeW)
+      a(n, d, jsonNodeVisitPreorder, c);
+    else
+      a(n, d, jsonNodeVisitInorder, c);
+    if (n->nodeW < n->nodeN) {
+      n = *(n->node + n->nodeW++);
+      ++d;
+    } else {
+      a(n, d, jsonNodeVisitPostorder, c);
+      n->nodeW = 0;
+      n = n->parent;
+      --d;
+    }
+  }
+}
+
+void
+jsonNodeFree(
+  void (*d)(void *)
+ ,jsonNode_t *n
+){
+  while (n) {
+    for (; n->nodeW < n->nodeN && (*(n->node + n->nodeW))->type != jsonTp_Jb && (*(n->node + n->nodeW))->type != jsonTp_Je; ++n->nodeW);
+    if (n->nodeW < n->nodeN)
+      n = *(n->node + n->nodeW++);
+    else {
+      while (n->nodeN)
+        d(*(n->node + --n->nodeN));
+      d(n->node);
+      n->node = 0;
+      n->nodeW = 0;
+      n = n->parent;
+    }
+  }
+}

@@ -541,6 +541,15 @@ jsonEncodeString(
     in++;
     len += 2;
     break;
+  case '/': /* 0x2f */
+    if (olen > 1) {
+      *out++ = '\\';
+      *out++ = '/';
+      olen -= 2;
+    }
+    in++;
+    len += 2;
+    break;
   case '\\': /* 0x5c */
     if (olen > 1) {
       *out++ = '\\';

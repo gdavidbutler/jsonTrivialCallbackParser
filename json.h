@@ -110,7 +110,7 @@ typedef struct jsonNode {
   unsigned int nodeW;       /* walk node */
 } jsonNode_t;
 
-/* parse a JSON document of len with(out) white bodies into an allocated JSON node */
+/* parse a JSON document of len into an allocated JSON node */
 /* return -1 on error else offset of last char parsed */
 /* the node is allocated with all that was parseable */
 int

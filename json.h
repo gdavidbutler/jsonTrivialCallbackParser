@@ -120,7 +120,7 @@ json2node(
  ,jsonSt_t *elementTagBuf
  ,const unsigned char *json
  ,unsigned int numberOfElementTagBuf
- ,unsigned int xlen
+ ,unsigned int jlen
 );
 
 /* jsonNode walk visit types */

@@ -27,6 +27,7 @@
 
 int
 main(
+  void
 ){
   static const unsigned char enc[] = "This is a test of \"\\\b\t\f\n\r\" how did it do?";
   static const unsigned char dnc[] = "This is a test of\\n(c) white on black \\u00a9\\n(c) black on white \\uD83C\\uDD52\\nhow did it do?";

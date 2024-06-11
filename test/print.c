@@ -169,6 +169,7 @@ cb(
 
 int
 main(
+  void
 ){
   unsigned char *bf;
   jsonSt_t tg[64];

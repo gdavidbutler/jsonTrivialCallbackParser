@@ -656,10 +656,10 @@ int
 jsonDecodeBase64(
   unsigned char *out
  ,unsigned int olen
- ,char const *in
+ ,const char *in
  ,unsigned int ilen
 ){
-  static unsigned char const b64[] = {
+  static const unsigned char b64[] = {
     66, 66, 66, 66,  66, 66, 66, 66,  66, 64, 64, 66,  66, 64, 66, 66,
     66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,
     64, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 62,  66, 66, 66, 63,
@@ -726,7 +726,7 @@ int
 jsonEncodeBase64(
   char *out
  ,unsigned int olen
- ,unsigned char const *in
+ ,const unsigned char *in
  ,unsigned int ilen
 ){
   static const char b64[] =
@@ -749,12 +749,123 @@ jsonEncodeBase64(
       *out++ = b64[in[0] >> 2];
       frag = (in[0] << 4) & 0x30;
       if (ilen > 1)
-          frag |= in[1] >> 4;
+        frag |= in[1] >> 4;
       *out++ = b64[frag];
       *out++ = (ilen > 1) ? b64[(in[1] << 2) & 0x3c] : '=';
       *out++ = '=';
     }
     len += 4;
+  }
+  return (len);
+}
+
+int
+jsonDecodeBase64Url(
+  unsigned char *out
+ ,unsigned int olen
+ ,const char *in
+ ,unsigned int ilen
+){
+  static const unsigned char b64[] = {
+    66, 66, 66, 66,  66, 66, 66, 66,  66, 64, 64, 66,  66, 64, 66, 66,
+    66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,
+    64, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,  66, 62, 66, 66,
+    52, 53, 54, 55,  56, 57, 58, 59,  60, 61, 66, 66,  66, 65, 66, 66,
+    66,  0,  1,  2,   3,  4,  5,  6,   7,  8,  9, 10,  11, 12, 13, 14,
+    15, 16, 17, 18,  19, 20, 21, 22,  23, 24, 25, 66,  66, 66, 66, 63,
+    66, 26, 27, 28,  29, 30, 31, 32,  33, 34, 35, 36,  37, 38, 39, 40,
+    41, 42, 43, 44,  45, 46, 47, 48,  49, 50, 51, 66,  66, 66, 66, 66,
+    66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,
+    66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,
+    66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,
+    66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,
+    66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,
+    66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,
+    66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,
+    66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66,  66, 66, 66, 66
+  };
+  unsigned long buf;
+  int len;
+
+  buf = 1;
+  len = 0;
+  while (ilen-- > 0) {
+    unsigned char c;
+
+    switch ((c = b64[*(unsigned char*)in++])) {
+    case 66: /* invalid */
+      return (-1);
+    case 64: /* whitespace */
+      continue;
+    case 65: /* pad */
+      ilen = 0;
+      break;
+    default:
+      buf = buf << 6 | c;
+      if (buf & 0x1000000) {
+        if (olen >= 3) {
+          *out++ = buf >> 16;
+          *out++ = buf >> 8;
+          *out++ = buf;
+          olen -= 3;
+        }
+        len += 3;
+        buf = 1;
+      }
+      break;
+    }
+  }
+  if (buf & 0x40000) {
+    if (olen >= 2) {
+      *out++ = buf >> 10;
+      *out++ = buf >> 2;
+    }
+    len += 2;
+  } else if (buf & 0x1000) {
+    if (olen >= 1)
+      *out++ = buf >> 4;
+    len++;
+  }
+  return (len);
+}
+
+int
+jsonEncodeBase64Url(
+  char *out
+ ,unsigned int olen
+ ,const unsigned char *in
+ ,unsigned int ilen
+){
+  static const char b64[] =
+   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+  int len;
+
+  for (len = 0; ilen >= 3; in += 3, ilen -= 3, len += 4) {
+    if (olen >= 4) {
+      *out++ = b64[in[0] >> 2];
+      *out++ = b64[((in[0] << 4) & 0x30) | (in[1] >> 4)];
+      *out++ = b64[((in[1] << 2) & 0x3c) | (in[2] >> 6)];
+      *out++ = b64[in[2] & 0x3f];
+      olen -= 4;
+    }
+  }
+  if (ilen) {
+    if (olen >= 2) {
+      unsigned char frag;
+
+      *out++ = b64[in[0] >> 2];
+      frag = (in[0] << 4) & 0x30;
+      if (ilen > 1) {
+        frag |= in[1] >> 4;
+        *out++ = b64[frag];
+        if (olen >= 3) {
+          *out++ = b64[(in[1] << 2) & 0x3c];
+          ++len;
+        }
+      } else
+        *out++ = b64[frag];
+    }
+    len += 2;
   }
   return (len);
 }

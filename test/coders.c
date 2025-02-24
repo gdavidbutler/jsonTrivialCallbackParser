@@ -31,8 +31,9 @@ main(
 ){
   static const unsigned char enc[] = "This is a test of \"\\\b\t\f\n\r\" how did it do?";
   static const unsigned char dnc[] = "This is a test of\\n(c) white on black \\u00a9\\n(c) black on white \\uD83C\\uDD52\\nhow did it do?";
-  static const char b64[] = "QmFzZTY0";
-  static const unsigned char s64[] = "Base64";
+  static const char b64[] = "KFVybCAgZG8/KQ==";
+  static const char u64[] = "KFVybCAgZG8_KQ";
+  static const unsigned char s64[] = "(Url  do?)";
   int sz;
   unsigned char *bf;
   unsigned char *tbf;
@@ -61,6 +62,14 @@ main(
   if ((sz = jsonEncodeBase64((char *)bf, BUFSIZ, s64, sizeof (s64) - 1)) > BUFSIZ)
     return (2);
   printf("jsonEncodeBase64(%s)\n->\n%.*s\n", s64, sz, bf);
+  putchar('\n');
+  if ((sz = jsonDecodeBase64Url((unsigned char *)bf, BUFSIZ, u64, sizeof (u64) - 1)) > BUFSIZ)
+    return (2);
+  printf("jsonDecodeBase64Url(%s)\n->\n%.*s\n", u64, sz, bf);
+  putchar('\n');
+  if ((sz = jsonEncodeBase64Url((char *)bf, BUFSIZ, s64, sizeof (s64) - 1)) > BUFSIZ)
+    return (2);
+  printf("jsonEncodeBase64Url(%s)\n->\n%.*s\n", s64, sz, bf);
   putchar('\n');
   free(bf);
   return (0);

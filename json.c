@@ -685,15 +685,7 @@ jsonDecodeBase64(
   while (ilen-- > 0) {
     unsigned char c;
 
-    switch ((c = b64[*(unsigned char*)in++])) {
-    case 66: /* invalid */
-      return (-1);
-    case 64: /* whitespace */
-      continue;
-    case 65: /* pad */
-      ilen = 0;
-      break;
-    default:
+    if ((c = b64[*(unsigned char*)in++]) < 64) {
       buf = buf << 6 | c;
       if (buf & 0x1000000) {
         if (olen >= 3) {
@@ -705,8 +697,12 @@ jsonDecodeBase64(
         len += 3;
         buf = 1;
       }
-      break;
-    }
+    } else if (c == 64)
+      continue;
+    else if (c == 65)
+      ilen = 0;
+    else
+      return (-1);
   }
   if (buf & 0x40000) {
     if (olen >= 2) {
@@ -792,15 +788,7 @@ jsonDecodeBase64Url(
   while (ilen-- > 0) {
     unsigned char c;
 
-    switch ((c = b64[*(unsigned char*)in++])) {
-    case 66: /* invalid */
-      return (-1);
-    case 64: /* whitespace */
-      continue;
-    case 65: /* pad */
-      ilen = 0;
-      break;
-    default:
+    if ((c = b64[*(unsigned char*)in++]) < 64) {
       buf = buf << 6 | c;
       if (buf & 0x1000000) {
         if (olen >= 3) {
@@ -812,8 +800,12 @@ jsonDecodeBase64Url(
         len += 3;
         buf = 1;
       }
-      break;
-    }
+    } else if (c == 64)
+      continue;
+    else if (c == 65)
+      ilen = 0;
+    else
+      return (-1);
   }
   if (buf & 0x40000) {
     if (olen >= 2) {

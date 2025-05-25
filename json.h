@@ -74,6 +74,8 @@ int jsonEncodeString(
  ,unsigned int ilen
 );
 
+/* base64 using '+', '/', '=' */
+
 /* estimated length of needed out buffer */
 #define jsonDecodeBase64Need(inl) (((inl + 3) / 4) * 3)
 
@@ -86,6 +88,23 @@ int jsonDecodeBase64(
  ,unsigned int ilen
 );
 
+/* estimated length of needed out buffer */
+#define jsonEncodeBase64Need(inl) (((inl + 2) / 3) * 4)
+
+/* return -1 on error else the length of out */
+/* if length returned is more than length provided, allocate needed memory and retry */
+int jsonEncodeBase64(
+  char *out
+ ,unsigned int olen
+ ,const unsigned char *in
+ ,unsigned int ilen
+);
+
+/* base64 using '-', '_' */
+
+/* estimated length of needed out buffer */
+#define jsonDecodeBase64UrlNeed(inl) (((inl + 3) / 4) * 3)
+
 /* return -1 on error else the length of out */
 /* if length returned is more than length provided, allocate needed memory and retry */
 int jsonDecodeBase64Url(
@@ -96,19 +115,8 @@ int jsonDecodeBase64Url(
 );
 
 /* estimated length of needed out buffer */
-#define jsonEncodeBase64Need(inl) (((inl + 2) / 3) * 4)
+#define jsonEncodeBase64UrlNeed(inl) (((inl + 2) / 3) * 4)
 
-/* with '+', '/', '=' */
-/* return -1 on error else the length of out */
-/* if length returned is more than length provided, allocate needed memory and retry */
-int jsonEncodeBase64(
-  char *out
- ,unsigned int olen
- ,const unsigned char *in
- ,unsigned int ilen
-);
-
-/* with '-', '_' */
 /* return -1 on error else the length of out */
 /* if length returned is more than length provided, allocate needed memory and retry */
 int jsonEncodeBase64Url(
